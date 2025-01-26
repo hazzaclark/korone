@@ -105,3 +105,39 @@ impl std::fmt::Display for ENDIAN_READ_ERR
 }
 
 impl std::error::Error for ENDIAN_READ_ERR {}
+
+
+// MAIN ENCOMPASSING READING AND WRITING SCHEMA
+
+pub struct SOURCE_ENDIAN;
+
+impl SOURCE_ENDIAN
+{
+    // DEFINE A GENERIC METHOD TO READ A SPECIFIED VALUE FROM THE READER
+    // THE DEFINING FEATURE IS THAT THIS READ SCHEMA MUST IMPLEMENT THE READ TRAIT
+    // WHICH ENCOMPASSES A FILE, BUFFER, OR STREAM
+
+    pub fn READ<R: Read, T>(mut READER: R) -> Result<T, ENDIAN_READ_ERR>
+    where
+        T: Default + Copy
+    {
+        let mut VALUE = T::default();
+
+        // USE THE READ_EXACT METHOD IN ORDE3R TO EXTRAPOLATE THE SIZE OF
+        // BYTES INTO VALUE
+
+        // I LEARNT THAT USING THE FROM RAW PARTS MUTABLE DIRECTIVE ALLOWS
+        // FOR THE MUTABLE ALLOCATION OF MEMORY TO THAT POINTER
+
+        READER.read_exact(unsafe 
+        {
+            std::slice::from_raw_parts_mut
+            (
+                &mut VALUE as *mut T as *mut u8,
+                std::mem::size_of::<T>(),
+            )
+        }).map_err(ENDIAN_READ_ERR::IoError)?;
+        
+        Ok(VALUE)
+    }
+}
