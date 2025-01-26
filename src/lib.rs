@@ -7,15 +7,38 @@
 
 // SYSTEM INCLUDES
 
-use std::cmp;
-use std::array;
 use std::mem;
-use std::io;
 use std::marker::PhantomData;
 use std::convert::TryInto;
 use std::io::{Read, Write};
 use std::io::{Seek, SeekFrom};
 
+// STATICALLY AVAILABLE TYPE LEVEL TRAITS FOR ASSERTING
+// DIFFERENT GATE CONDITIONS
+
+mod TYPE_TRAIT
+{
+    pub trait NOT { type Output; }
+
+    impl NOT for bool { type Output = bool; }
+
+    pub trait Conjunction<T: = bool> { type Output; }
+
+    pub trait Disconjunction<T: = bool> { type Output; }
+
+    pub trait IsAnyOf<T> { const VALUE: bool; }
+
+    pub trait TRAIT_CONT 
+    {
+        fn HAS_PUSH_BACK() -> bool;
+        fn HAS_SIZE() -> bool;
+        fn HAS_RESIZE() -> bool;
+        fn HAS_DATA() -> bool;
+    }
+}
+
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ENDIANESS
 {
     Little,
@@ -29,7 +52,3 @@ pub enum ENDIAN_READ_ERR
     ConversionError,
 }
 
-pub trait ENDIAN_READ<T>
-{
-    fn READ_ENDIAN(&mut self, E: ENDIANESS) -> Result<T, ENDIAN_READ_ERR>;
-}
