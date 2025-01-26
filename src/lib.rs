@@ -70,6 +70,23 @@ impl ENDIAN_UTIL
     {
         VALUE.SWAP_BYTES()
     }
+
+    pub fn SELECT_UNSIGNED<T>(SIZE: usize) -> Option<T>
+    where
+        T: From<u8> + From<u16> + From<u32> + From<u64>
+    {
+
+        // MATCH SIZE BASED ON AMOUNT OF BYTES BEING ALLOCATED FOR EACH DATA TYPE
+
+        match SIZE
+        {
+            1 => Some(T::from(0u8)),
+            2 => Some(T::from(0u16)),
+            4 => Some(T::from(0u32)),
+            8 => Some(T::from(0u64)),
+            _ => None
+        }
+    }
 }
 
 // CREATE A STD DISPLAY OUTPUT FOR ANY AND ALL OF THE POSSIBLE OPTIONS
