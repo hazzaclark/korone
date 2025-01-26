@@ -22,7 +22,7 @@ cargo run
 
 ### Usage:
 
-``./korone <INPUT_FILE> <OUTPUT_FMT>`` 
+``./korone <INPUT_FILE>`` 
 
 
 
