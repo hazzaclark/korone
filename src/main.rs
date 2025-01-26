@@ -73,6 +73,9 @@ fn PROC_FILE(F_PATH: &str) -> Result<(), Box<dyn std::error::Error>>
 
 fn main()
 {
+    println!("HARRY CLARK - ENDIAN PARSER AND LEXER\n");
+
+    
     let args: Vec<String> = ENV::args().collect();
 
     if args.len() < 2
