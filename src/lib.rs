@@ -63,7 +63,6 @@ pub trait ENDIAN_BYTE_SWAP
 // AND UNSIGNED VALUES AND HANDLE THEIR RESPECTIVE LENGTHS
 
 pub struct ENDIAN_UTIL;
-
 impl ENDIAN_UTIL
 {
     pub fn B_TYPE_SWAP<T: ENDIAN_BYTE_SWAP>(VALUE: T) -> T
@@ -110,7 +109,6 @@ impl std::error::Error for ENDIAN_READ_ERR {}
 // MAIN ENCOMPASSING READING AND WRITING SCHEMA
 
 pub struct SOURCE_ENDIAN;
-
 impl SOURCE_ENDIAN
 {
     // DEFINE A GENERIC METHOD TO READ A SPECIFIED VALUE FROM THE READER
@@ -137,7 +135,47 @@ impl SOURCE_ENDIAN
                 std::mem::size_of::<T>(),
             )
         }).map_err(ENDIAN_READ_ERR::IoError)?;
-        
+
         Ok(VALUE)
+    }
+
+    // NOW THE SAME BUT REVERSE
+
+    pub fn READ_INVERSE<R: Read, T>(mut READER: R) -> Result<T, ENDIAN_READ_ERR>
+    where
+        T: Default + Copy
+    {
+        let mut VALUE = T::default();
+
+        // USE THE READ_EXACT METHOD IN ORDE3R TO EXTRAPOLATE THE SIZE OF
+        // BYTES INTO VALUE
+
+        // I LEARNT THAT USING THE FROM RAW PARTS MUTABLE DIRECTIVE ALLOWS
+        // FOR THE MUTABLE ALLOCATION OF MEMORY TO THAT POINTER
+
+        READER.read_exact(unsafe 
+        {
+            std::slice::from_raw_parts_mut
+            (
+                &mut VALUE as *mut T as *mut u8,
+                std::mem::size_of::<T>(),
+            )
+        }).map_err(ENDIAN_READ_ERR::IoError)?;
+
+        Ok(VALUE.SWAP_BYTES)
+    }
+
+    pub fn WRITE<W: Write, T>(mut WRITER: W, VALUE: T) -> Result<(), ENDIAN_READ_ERR>
+    where
+        T: Copy
+    {
+        WRITER.write_all(unsafe
+        {
+            std::slice::from_raw_parts
+            (
+                &VALUE as *const T as *const u8,
+                std::mem::size_of::<T>()
+            )
+        })..map_err(ENDIAN_READ_ERR::IoError)
     }
 }
