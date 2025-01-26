@@ -8,13 +8,13 @@
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 
-mod lib;
+mod endian;
 
 // SYSTEM INCLUDES
 
 use std::fs::File;
 use std::io::{Read, BufReader};
-use crate::lib::{SOURCE_ENDIAN, ENDIAN_READ_ERR};
+use crate::endian::{SOURCE_ENDIAN, ENDIAN_READ_ERR};
 use std::env as ENV;
 use std::process as PROC;
 
@@ -93,4 +93,3 @@ fn main()
         PROC::exit(1);
     }
 }
-
