@@ -23,3 +23,7 @@ cargo run
 ### Usage:
 
 ``./korone <INPUT_FILE> <OUTPUT_FMT>`` 
+
+
+
+![200w](https://github.com/user-attachments/assets/8ceb109a-49a1-4caa-a3a0-5770d0911c81)
