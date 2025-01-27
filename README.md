@@ -6,7 +6,7 @@ A Lightweight Endianess Parser and Lexer
 The ambition and intention moreover, with this project is to providem myself with a lightweight solution for being able
 to evaluate and parse data in Rust - providing an opportunity to get a feel for the environment encompsssing Rust.
 
-The main encompassing feature is the byte-aware parser, allowing for an effective means of attribute EOS/EOF when being fed into stdin
+The main encompassing feature is the byte-aware parser, allowing for an effective means of attributing EOS/EOF when being fed into stdin
 
 Such is the idea of potentially working on an implementation to read and parse Binary formats to handle certain operations
 
