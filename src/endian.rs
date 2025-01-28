@@ -18,6 +18,7 @@ pub enum ENDIAN_READ_ERR
     IoError(std::io::Error),
     BufferTooSmall,
     ConversionError,
+    EndOfFile,
 }
 
 // CREATE A STD DISPLAY OUTPUT FOR ANY AND ALL OF THE POSSIBLE OPTIONS
@@ -31,6 +32,7 @@ impl std::fmt::Display for ENDIAN_READ_ERR
             ENDIAN_READ_ERR::IoError(err) => write!(f, "IO Error: {}", err),
             ENDIAN_READ_ERR::BufferTooSmall => write!(f, "Buffer is too small"),
             ENDIAN_READ_ERR::ConversionError => write!(f, "Conversion error"),
+            ENDIAN_READ_ERR::EndOfFile => write!(f, "End of file reached"),
         }
     }
 }
