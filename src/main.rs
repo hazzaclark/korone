@@ -2,15 +2,10 @@
 
 // LIGHTWEIGHT ENDIANESS PARSER AND LEXER IN RUST
 
-// ADD THESE LINES BECAUSE THE COMPILER WAS SCREAMING AT ME
-// HEAVEN FORBID YOU HAVE A CODING STYLE ¯\_(ツ)_/¯
-
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 
 mod endian;
-
-// SYSTEM INCLUDES
 
 use std::fs::File;
 use std::io::{Read, BufReader};
@@ -30,69 +25,151 @@ pub struct INSTR
 
 // FUNCTION TO PARSE BINARY FILE
 
-pub fn PARSE_BINARY<R: Read>(READER: &mut R) -> Result<Vec<INSTR>, ENDIAN_READ_ERR> 
+pub fn PARSE_BINARY<R: Read>(READER: &mut R, IS_LITTLE_ENDIAN: bool) -> Result<Vec<INSTR>, ENDIAN_READ_ERR> 
 {
     let mut INSTRUCTIONS = Vec::new();
-    
+
     loop 
     {
-        let OPCODE = match SOURCE_ENDIAN::READ::<R, u16>(READER) 
+        let OPCODE = match if IS_LITTLE_ENDIAN 
         {
-            Ok(OP) => OP,
-            Err(_) => break,
-        };
-        
-        let OPERAND = match SOURCE_ENDIAN::READ::<R, u16>(READER) 
+            SOURCE_ENDIAN::READ_LE::<R, u16>(READER)
+        } 
+        else 
         {
-            Ok(OPER) => OPER,
-            Err(_) => break,
+            SOURCE_ENDIAN::READ_BE::<R, u16>(READER)
+        } 
+        {
+            Ok(OPCODE) => OPCODE,
+            Err(ENDIAN_READ_ERR::EndOfFile) => break, 
+            Err(e) => return Err(e),
         };
-        
+
+    
+        let OPERAND = match if IS_LITTLE_ENDIAN 
+        {
+            SOURCE_ENDIAN::READ_LE::<R, u16>(READER)
+        } 
+        else 
+        {
+            SOURCE_ENDIAN::READ_BE::<R, u16>(READER)
+        } 
+        {
+            Ok(OPERAND) => OPERAND,
+            Err(ENDIAN_READ_ERR::EndOfFile) => 
+            {
+                eprintln!("Warning: Incomplete instruction found at end of file. OPCODE: 0x{:04X}", OPCODE);
+                break; 
+            }
+            Err(e) => return Err(e),
+        };
+
         INSTRUCTIONS.push(INSTR { OPCODE, OPERAND });
     }
-    
+
+    if INSTRUCTIONS.is_empty() {
+        eprintln!("Warning: No valid instructions found in file.");
+    }
+
     Ok(INSTRUCTIONS)
 }
 
 // FUNCTION TO PROCESS A BINARY FILE
 
-fn PROC_FILE(F_PATH: &str) -> Result<(), Box<dyn std::error::Error>> 
+fn PROC_FILE(F_PATH: &str, IS_LITTLE_ENDIAN: bool) -> Result<(), Box<dyn std::error::Error>> 
 {
     let FILE = File::open(F_PATH)?;
+    let METADATA = FILE.metadata()?;
+
+    println!("Processing file: {}", F_PATH);
+    println!("File size: {} bytes", METADATA.len());
+
+    if METADATA.len() < std::mem::size_of::<u16>() as u64 
+    {
+        eprintln!(
+            "Warning: File is smaller than the size of a single instruction (4 bytes). Partial data will be processed."
+        );
+    } 
+    else if METADATA.len() % std::mem::size_of::<INSTR>() as u64 != 0 
+    {
+        eprintln!
+        (
+            "Warning: File size ({}) is not a multiple of instruction size (4 bytes). Some data might be ignored.",
+            METADATA.len()
+        );
+    }
+
     let mut READER = BufReader::new(FILE);
 
-    let INSTRUCTIONS = PARSE_BINARY(&mut READER)?;
-
-    for (i, INSTR) in INSTRUCTIONS.iter().enumerate() 
+    match PARSE_BINARY(&mut READER, IS_LITTLE_ENDIAN) 
     {
-        println!("Instruction {}: {:?}", i, INSTR);
+        Ok(INSTRUCTIONS) => 
+        {
+            if INSTRUCTIONS.is_empty() 
+            {
+                println!("File was empty or contained no valid instructions.");
+            } 
+            else 
+            {
+                println!("Found {} instructions:", INSTRUCTIONS.len());
+                for (i, INSTR) in INSTRUCTIONS.iter().enumerate() 
+                {
+                    println!
+                    (
+                        "Instruction {}: OPCODE: 0x{:04X}, OPERAND: 0x{:04X}",
+                        i, INSTR.OPCODE, INSTR.OPERAND
+                    );
+                }
+            }
+        }
+        Err(e) => match e 
+        {
+            ENDIAN_READ_ERR::EndOfFile => 
+            {
+                eprintln!("Warning: File ended unexpectedly while parsing.");
+            }
+            ENDIAN_READ_ERR::IoError(err) => 
+            {
+                eprintln!("IO Error: {}", err);
+                if err.kind() == std::io::ErrorKind::UnexpectedEof {
+                    eprintln!("The file might be smaller than expected or corrupted.");
+                }
+            }
+            _ => return Err(Box::new(e)),
+        },
     }
 
     Ok(())
 }
 
-fn main()
+fn main() 
 {
     println!("HARRY CLARK - ENDIAN PARSER AND LEXER\n");
+    let ARGS: Vec<String> = ENV::args().collect();
 
-    
-    let args: Vec<String> = ENV::args().collect();
-
-    if args.len() < 2
-    {
-        eprintln!
-        (
-            "Usage: {} <INPUT_FILE>\n", args[0]
-        );
-
+    if ARGS.len() < 3 {
+        eprintln!("Usage: {} <INPUT_FILE> <ENDIANNESS>\n", ARGS[0]);
+        eprintln!("ENDIANNESS: LE (little-endian) or BE (big-endian)");
         PROC::exit(1);
     }
 
-    let INPUT = &args[1];
+    let INPUT = &ARGS[1];
+    let ENDIANNESS = &ARGS[2];
 
-    if let Err(err) = PROC_FILE(INPUT)
+    let IS_LITTLE_ENDIAN = match ENDIANNESS.as_str() 
     {
-        eprintln!("Error processing Input File {}", err);
+        "LE" => true,
+        "BE" => false,
+        _ => 
+        {
+            eprintln!("Invalid endianness. Use 'LE' for little-endian or 'BE' for big-endian.");
+            PROC::exit(1);
+        }
+    };
+
+    if let Err(ERR) = PROC_FILE(INPUT, IS_LITTLE_ENDIAN) 
+    {
+        eprintln!("Error processing file: {}", ERR);
         PROC::exit(1);
     }
 }
