@@ -33,5 +33,6 @@ The following is an example of using a SEGA Mega Binary ROM file to read the End
 
 The example provided is using one of BigEvilCorp's, [Mega Drive Sample's](https://github.com/BigEvilCorporation/megadrive_samples) 
 
+[Output Paste](https://pastebin.com/MQsigh4D)
 
 ![200w](https://github.com/user-attachments/assets/8ceb109a-49a1-4caa-a3a0-5770d0911c81)
