@@ -34,11 +34,13 @@ pub fn PARSE_BINARY<R: Read>(READER: &mut R, IS_LITTLE_ENDIAN: bool) -> Result<V
         let OPCODE = match if IS_LITTLE_ENDIAN 
         {
             SOURCE_ENDIAN::READ_LE::<R, u16>(READER)
-        } 
+        }
+            
         else 
         {
             SOURCE_ENDIAN::READ_BE::<R, u16>(READER)
         } 
+            
         {
             Ok(OPCODE) => OPCODE,
             Err(ENDIAN_READ_ERR::EndOfFile) => break, 
@@ -50,10 +52,12 @@ pub fn PARSE_BINARY<R: Read>(READER: &mut R, IS_LITTLE_ENDIAN: bool) -> Result<V
         {
             SOURCE_ENDIAN::READ_LE::<R, u16>(READER)
         } 
+            
         else 
         {
             SOURCE_ENDIAN::READ_BE::<R, u16>(READER)
         } 
+            
         {
             Ok(OPERAND) => OPERAND,
             Err(ENDIAN_READ_ERR::EndOfFile) => 
@@ -61,13 +65,15 @@ pub fn PARSE_BINARY<R: Read>(READER: &mut R, IS_LITTLE_ENDIAN: bool) -> Result<V
                 eprintln!("Warning: Incomplete instruction found at end of file. OPCODE: 0x{:04X}", OPCODE);
                 break; 
             }
+            
             Err(e) => return Err(e),
         };
 
         INSTRUCTIONS.push(INSTR { OPCODE, OPERAND });
     }
 
-    if INSTRUCTIONS.is_empty() {
+    if INSTRUCTIONS.is_empty() 
+    {
         eprintln!("Warning: No valid instructions found in file.");
     }
 
@@ -86,7 +92,8 @@ fn PROC_FILE(F_PATH: &str, IS_LITTLE_ENDIAN: bool) -> Result<(), Box<dyn std::er
 
     if METADATA.len() < std::mem::size_of::<u16>() as u64 
     {
-        eprintln!(
+        eprintln!
+        (
             "Warning: File is smaller than the size of a single instruction (4 bytes). Partial data will be processed."
         );
     } 
@@ -108,7 +115,8 @@ fn PROC_FILE(F_PATH: &str, IS_LITTLE_ENDIAN: bool) -> Result<(), Box<dyn std::er
             if INSTRUCTIONS.is_empty() 
             {
                 println!("File was empty or contained no valid instructions.");
-            } 
+            }
+                
             else 
             {
                 println!("Found {} instructions:", INSTRUCTIONS.len());
@@ -122,6 +130,7 @@ fn PROC_FILE(F_PATH: &str, IS_LITTLE_ENDIAN: bool) -> Result<(), Box<dyn std::er
                 }
             }
         }
+        
         Err(e) => match e 
         {
             ENDIAN_READ_ERR::EndOfFile => 
@@ -131,7 +140,8 @@ fn PROC_FILE(F_PATH: &str, IS_LITTLE_ENDIAN: bool) -> Result<(), Box<dyn std::er
             ENDIAN_READ_ERR::IoError(err) => 
             {
                 eprintln!("IO Error: {}", err);
-                if err.kind() == std::io::ErrorKind::UnexpectedEof {
+                if err.kind() == std::io::ErrorKind::UnexpectedEof 
+                {
                     eprintln!("The file might be smaller than expected or corrupted.");
                 }
             }
@@ -147,7 +157,8 @@ fn main()
     println!("HARRY CLARK - ENDIAN PARSER AND LEXER\n");
     let ARGS: Vec<String> = ENV::args().collect();
 
-    if ARGS.len() < 3 {
+    if ARGS.len() < 3 
+    {
         eprintln!("Usage: {} <INPUT_FILE> <ENDIANNESS>\n", ARGS[0]);
         eprintln!("ENDIANNESS: LE (LITTLE-ENDIAN) or BE (BIG-ENDIAN)");
         PROC::exit(1);
