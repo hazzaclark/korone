@@ -46,7 +46,6 @@ impl SOURCE_ENDIAN
     // THE DEFINING FEATURE IS THAT THIS READ SCHEMA MUST IMPLEMENT THE READ TRAIT
     // WHICH ENCOMPASSES A FILE, BUFFER, OR STREAM
 
-
     pub fn READ_LE<R: Read, T>(READER: &mut R) -> Result<T, ENDIAN_READ_ERR>
     where
         T: Default + Copy + std::fmt::Debug + Sized,
@@ -69,6 +68,7 @@ impl SOURCE_ENDIAN
                 }
                 Ok(VALUE)
             }
+            
             Err(err) if err.kind() == std::io::ErrorKind::UnexpectedEof => 
             {
                 Err(ENDIAN_READ_ERR::EndOfFile)
@@ -77,6 +77,10 @@ impl SOURCE_ENDIAN
             Err(err) => Err(ENDIAN_READ_ERR::IoError(err)),
         }
     }
+
+    // NOW DO THE SAME FOR BIG ENDIAN
+    // ONLY DIFFERENCE BEING IS THAT YOU REVERSE THE ENUMERATION ORDER 
+    // DUE TO BEING READ THE INVERSE WAY
 
     pub fn READ_BE<R: Read, T>(READER: &mut R) -> Result<T, ENDIAN_READ_ERR>
     where
@@ -100,10 +104,12 @@ impl SOURCE_ENDIAN
                 }
                 Ok(VALUE)
             }
+            
             Err(err) if err.kind() == std::io::ErrorKind::UnexpectedEof => 
             {
                 Err(ENDIAN_READ_ERR::EndOfFile)
             }
+            
             Err(err) => Err(ENDIAN_READ_ERR::IoError(err)),
         }
     }
