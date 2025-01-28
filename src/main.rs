@@ -149,7 +149,7 @@ fn main()
 
     if ARGS.len() < 3 {
         eprintln!("Usage: {} <INPUT_FILE> <ENDIANNESS>\n", ARGS[0]);
-        eprintln!("ENDIANNESS: LE (little-endian) or BE (big-endian)");
+        eprintln!("ENDIANNESS: LE (LITTLE-ENDIAN) or BE (BIG-ENDIAN)");
         PROC::exit(1);
     }
 
