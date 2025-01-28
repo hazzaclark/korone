@@ -49,7 +49,7 @@ impl SOURCE_ENDIAN
 
     pub fn READ<R: Read, T>(READER: &mut R) -> Result<T, ENDIAN_READ_ERR>
     where
-        T: Default + Copy
+        T: Default + Copy,
     {
         let mut VALUE = T::default();
 
@@ -70,4 +70,103 @@ impl SOURCE_ENDIAN
 
         Ok(VALUE)
     }
+
+
+    // NOWE WE CAN READ SPECIFIC ENDIAN LEVELS
+
+    pub fn READ_LE<R: Read, T>(READER: &mut R) -> Result<T, ENDIAN_READ_ERR>
+    where
+        T: Default + Copy + std::fmt::Debug,
+        {
+            let mut VALUE = T::default();
+            let SIZE = std::mem::size_of::<T>();
+            let mut BUFFER = vec![0u8; SIZE];
+
+            READER.read_exact(&mut BUFFER).map_err(ENDIAN_READ_ERR::IoError)?;
+
+            // CONVERT LE BYTES TO THE TARGET
+
+            for(i, BYTE) in BUFFER.iter().enumerate()
+            {
+                unsafe
+                {
+                    let VALUE_PTR = (&mut VALUE as *mut T as *mut u8).add(i);
+                    *VALUE_PTR = *BYTE;
+                }
+            }
+
+            Ok(VALUE)
+        }
+
+    pub fn READ_LE<R: Read, T>(READER: &mut R) -> Result<T, ENDIAN_READ_ERR>
+    where
+        T: Default + Copy + std::fmt::Debug,
+        {
+            let mut VALUE = T::default();
+            let SIZE = std::mem::size_of::<T>();
+            let mut BUFFER = vec![0u8; SIZE];
+
+            READER.read_exact(&mut BUFFER).map_err(ENDIAN_READ_ERR::IoError)?;
+
+            // CONVERT LE BYTES TO THE TARGET
+
+            for(i, BYTE) in BUFFER.iter().enumerate()
+            {
+                unsafe
+                {
+                    let VALUE_PTR = (&mut VALUE as *mut T as *mut u8).add(i);
+                    *VALUE_PTR = *BYTE;
+                }
+            }
+
+            Ok(VALUE)
+        }
+
+    pub fn READ_LE<R: Read, T>(READER: &mut R) -> Result<T, ENDIAN_READ_ERR>
+    where
+        T: Default + Copy + std::fmt::Debug,
+        {
+            let mut VALUE = T::default();
+            let SIZE = std::mem::size_of::<T>();
+            let mut BUFFER = vec![0u8; SIZE];
+
+            READER.read_exact(&mut BUFFER).map_err(ENDIAN_READ_ERR::IoError)?;
+
+            // CONVERT LE BYTES TO THE TARGET
+
+            for(i, BYTE) in BUFFER.iter().enumerate()
+            {
+                unsafe
+                {
+                    let VALUE_PTR = (&mut VALUE as *mut T as *mut u8).add(i);
+                    *VALUE_PTR = *BYTE;
+                }
+            }
+
+            Ok(VALUE)
+        }
+
+    pub fn READ_BE<R: Read, T>(READER: &mut R) -> Result<T, ENDIAN_READ_ERR>
+    where
+        T: Default + Copy + std::fmt::Debug,
+        {
+            let mut VALUE = T::default();
+            let SIZE = std::mem::size_of::<T>();
+            let mut BUFFER = vec![0u8; SIZE];
+    
+            READER.read_exact(&mut BUFFER).map_err(ENDIAN_READ_ERR::IoError)?;
+    
+            // CONVERT LE BYTES TO THE TARGET
+    
+            for(i, BYTE) in BUFFER.iter().rev().enumerate()
+            {
+                unsafe
+                {
+                    let VALUE_PTR = (&mut VALUE as *mut T as *mut u8).add(i);
+                    *VALUE_PTR = *BYTE;
+                }
+            }
+    
+            Ok(VALUE)
+        }
 }
