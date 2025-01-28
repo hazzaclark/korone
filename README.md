@@ -1,6 +1,8 @@
 # korone
 A Lightweight Endianess Parser and Lexer
 
+![image](https://github.com/user-attachments/assets/7e120d96-6a6e-4afc-9203-7b76f55e2546)
+
 # Motive:
 
 The ambition and intention moreover, with this project is to providem myself with a lightweight solution for being able
@@ -22,7 +24,7 @@ cargo run
 
 ### Usage:
 
-``./korone <INPUT_FILE>`` 
+``./korone <INPUT_FILE> <ENDIANNESS>`` 
 
 
 
