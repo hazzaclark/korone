@@ -26,6 +26,11 @@ cargo run
 
 ``./korone <INPUT_FILE> <ENDIANNESS>`` 
 
+![image](https://github.com/user-attachments/assets/5d8c0abd-2268-40d6-a5b0-bd44b560df48)
+
+
+The following is an example of using a SEGA Mega Binary ROM file to read the Endianness level accordingly
+The example provided is using one of BigEvilCorp's, [Mega Drive Sample's](https://github.com/BigEvilCorporation/megadrive_samples) 
 
 
 ![200w](https://github.com/user-attachments/assets/8ceb109a-49a1-4caa-a3a0-5770d0911c81)
